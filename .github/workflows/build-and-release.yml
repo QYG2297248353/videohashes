@@ -11,29 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project:
-          - videohashes
-          - duration
-          - phashcompare
-        goos:
-          - windows
-          - linux
-          - darwin
-        goarch:
-          - amd64
-          - arm64
-          # - arm
-        exclude:
+        project: [videohashes, duration, phashcompare]
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
           - goos: darwin
-            goarch: arm
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: wangyoucao577/go-release-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: latest
+          goversion: 1.21.9
           ldflags: -extldflags=-static -s -w
           project_path: ./cmd/${{ matrix.project }}
           asset_name: ${{ matrix.project }}-${{ matrix.goos }}-${{ matrix.goarch }}
